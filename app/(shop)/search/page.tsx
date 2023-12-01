@@ -3,21 +3,24 @@ import prisma from "@/prisma/client";
 import ProductCard from "./_components/ProductCard";
 import { Product } from "@prisma/client";
 import { ParsedUrlQuery } from "querystring";
-import PaginationControls from "./_components/PaginationControls ";
+// import PaginationControls from "./_components/PaginationControls ";
 
 interface SearchParams extends ParsedUrlQuery {
   category?: string;
   sort?: string;
+  q?: string;
 }
 const SearchPage = async ({ searchParams }: { searchParams: SearchParams }) => {
-  const page = searchParams["page"] ?? "1";
-  const per_page = searchParams["per_page"] ?? "3";
+  // const page = searchParams["page"] ?? "1";
+  // const per_page = searchParams["per_page"] ?? "3";
 
-  const start = (Number(page) - 1) * Number(per_page); // 0, 5, 10 ...
-  const end = start + Number(per_page); // 5, 10, 15 ...
+  // const start = (Number(page) - 1) * Number(per_page); // 0, 5, 10 ...
+  // const end = start + Number(per_page); // 5, 10, 15 ...
 
   const category = searchParams.category;
   const sort = searchParams.sort;
+  const q = searchParams.q;
+  // console.log("searchParams", q);
 
   let orderBy = {};
   if (sort == "price-asc") {
@@ -37,16 +40,30 @@ const SearchPage = async ({ searchParams }: { searchParams: SearchParams }) => {
   let products: Product[] = [];
 
   try {
+    //
     products = await prisma?.product.findMany({
-      where: category
-        ? {
-            id: category,
-          }
-        : {},
+      where: {
+        name: {
+          contains: q,
+          mode: "insensitive",
+        },
+
+        // category
+        //   ? {
+        //       id: category,
+
+        //     }
+        //   : {},
+        category: category
+          ? {
+              id: category,
+            }
+          : {},
+      },
+
       orderBy: orderBy,
-      skip: start,
-      take: end,
     });
+    // console.log("products", products);
   } catch (error) {
     products = [];
   }
@@ -59,10 +76,10 @@ const SearchPage = async ({ searchParams }: { searchParams: SearchParams }) => {
       </div>
 
       <footer className="mt-20 w-full h-[10vh]  bg-blue-200 flex justify-center items-end p-2">
-        <PaginationControls
+        {/* <PaginationControls
           hasNextPage={end > products.length}
           hasPrevPage={start > 0}
-        />
+        /> */}
       </footer>
     </>
   );

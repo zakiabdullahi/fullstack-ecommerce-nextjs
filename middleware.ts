@@ -13,10 +13,10 @@ type User = {
 export const config = {
   matcher: [
     "/dashboard/user/:path*",
-    // "/api/user/:path*",
+    "/api/user/:path*",
 
-    // "/dashboard/admin/:path*",
-    // "/api/admin/:path*",
+    "/dashboard/admin/:path*",
+    "/api/admin/:path*",
   ],
 };
 
